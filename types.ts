@@ -40,8 +40,14 @@ export interface AppState {
 
 export type TopicUpdatePayload = Partial<Omit<Topic, 'id'>>;
 
+export interface Section {
+  title: string;
+  content: string;
+}
+
 export interface AIResponse {
   explanation: string;
+  sections: Section[];
   keyPoints: string[];
   relatedTopics: string[];
 }

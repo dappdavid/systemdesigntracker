@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Topic, AIResponse } from '../types';
 import { explainTopic } from '../services/geminiService';
-import { X, Sparkles, BookOpen, Lightbulb, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
+import { X, Sparkles, BookOpen, Lightbulb, ExternalLink, Loader2, AlertCircle, Layers } from 'lucide-react';
 
 interface AIModalProps {
   topic: Topic | null;
@@ -37,13 +37,13 @@ const AIModal: React.FC<AIModalProps> = ({ topic, isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+      <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 flex justify-between items-start bg-slate-50/50">
+        <div className="p-6 border-b border-slate-100 flex justify-between items-start bg-slate-50/50 flex-shrink-0">
           <div>
             <div className="flex items-center space-x-2 mb-1">
               <Sparkles className="text-purple-600 w-5 h-5" />
-              <span className="text-xs font-bold text-purple-600 uppercase tracking-wide">AI Tutor</span>
+              <span className="text-xs font-bold text-purple-600 uppercase tracking-wide">AI Tutor (Deep Dive)</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-800">{topic.title}</h2>
             <p className="text-sm text-slate-500 mt-1">{topic.category}</p>
@@ -54,69 +54,98 @@ const AIModal: React.FC<AIModalProps> = ({ topic, isOpen, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+        <div className="p-0 overflow-y-auto custom-scrollbar flex-1 bg-white">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-              <p className="text-slate-500 animate-pulse">Consulting the system design oracle...</p>
+            <div className="flex flex-col items-center justify-center h-full min-h-[400px] space-y-6">
+              <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+              <div className="text-center space-y-2">
+                <p className="text-lg font-medium text-slate-700">Generating comprehensive guide...</p>
+                <p className="text-sm text-slate-400">This may take a few seconds as we compile detailed steps.</p>
+              </div>
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center text-rose-500 space-y-3">
+            <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center text-rose-500 space-y-3 p-8">
               <AlertCircle size={40} />
-              <p>{error}</p>
+              <p className="font-medium">{error}</p>
             </div>
           ) : data ? (
-            <div className="space-y-8">
-              {/* Explanation */}
-              <div className="prose prose-slate max-w-none">
-                <h3 className="flex items-center text-lg font-semibold text-slate-800 mb-3">
-                  <BookOpen className="w-5 h-5 mr-2 text-blue-500" />
-                  Overview
-                </h3>
-                <p className="text-slate-600 leading-relaxed whitespace-pre-line">
-                  {data.explanation}
-                </p>
-              </div>
+            <div className="flex flex-col md:flex-row h-full">
+              
+              {/* Main Content (Left/Top) */}
+              <div className="flex-1 p-8 space-y-8">
+                {/* Summary */}
+                <div className="prose prose-slate max-w-none">
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
+                    <h3 className="flex items-center text-sm font-bold text-blue-800 mb-2 uppercase tracking-wide">
+                      <BookOpen className="w-4 h-4 mr-2" />
+                      Executive Summary
+                    </h3>
+                    <p className="text-slate-700 leading-relaxed text-sm">
+                      {data.explanation}
+                    </p>
+                  </div>
+                </div>
 
-              {/* Key Points */}
-              <div className="bg-indigo-50 rounded-xl p-5 border border-indigo-100">
-                <h3 className="flex items-center text-lg font-semibold text-indigo-900 mb-3">
-                  <Lightbulb className="w-5 h-5 mr-2 text-indigo-600" />
-                  Key Takeaways
-                </h3>
-                <ul className="space-y-2">
-                  {data.keyPoints.map((point, idx) => (
-                    <li key={idx} className="flex items-start text-indigo-800 text-sm">
-                      <span className="mr-2 mt-1.5 w-1.5 h-1.5 bg-indigo-500 rounded-full flex-shrink-0" />
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Related */}
-              <div>
-                <h3 className="flex items-center text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Related Topics
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {data.relatedTopics.map((tag, idx) => (
-                    <span key={idx} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm font-medium border border-slate-200">
-                      {tag}
-                    </span>
+                {/* Detailed Sections */}
+                <div className="space-y-8">
+                  {data.sections.map((section, idx) => (
+                    <div key={idx} className="relative pl-6 border-l-2 border-slate-200">
+                      <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-200 border-2 border-white"></div>
+                      <h3 className="text-lg font-bold text-slate-900 mb-3 leading-none flex items-center">
+                        <span className="mr-3 text-slate-400 font-mono text-sm">0{idx + 1}</span>
+                        {section.title}
+                      </h3>
+                      <p className="text-slate-600 leading-7 whitespace-pre-wrap text-[15px]">
+                        {section.content}
+                      </p>
+                    </div>
                   ))}
                 </div>
               </div>
+
+              {/* Sidebar (Right/Bottom) */}
+              <div className="w-full md:w-80 bg-slate-50 border-l border-slate-100 p-6 space-y-8 flex-shrink-0">
+                {/* Key Points */}
+                <div>
+                  <h3 className="flex items-center text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">
+                    <Lightbulb className="w-4 h-4 mr-2 text-amber-500" />
+                    Key Takeaways
+                  </h3>
+                  <ul className="space-y-3">
+                    {data.keyPoints.map((point, idx) => (
+                      <li key={idx} className="flex items-start text-slate-600 text-sm leading-snug bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                        <span className="mr-2.5 mt-1 w-1.5 h-1.5 bg-amber-500 rounded-full flex-shrink-0" />
+                        {point}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Related Topics */}
+                <div>
+                  <h3 className="flex items-center text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">
+                    <Layers className="w-4 h-4 mr-2 text-slate-500" />
+                    Related Concepts
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {data.relatedTopics.map((tag, idx) => (
+                      <span key={idx} className="px-3 py-1.5 bg-white text-slate-600 rounded-md text-xs font-medium border border-slate-200 shadow-sm hover:border-blue-300 transition-colors cursor-default">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
             </div>
           ) : null}
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+        <div className="p-4 border-t border-slate-100 bg-white flex justify-end flex-shrink-0">
           <button 
             onClick={onClose}
-            className="px-5 py-2 bg-white border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
+            className="px-6 py-2 bg-slate-800 text-white font-medium rounded-lg hover:bg-slate-700 transition-colors shadow-sm"
           >
             Close
           </button>
