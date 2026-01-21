@@ -24,7 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
     <div className="w-64 bg-slate-900 text-white h-full flex flex-col shadow-xl flex-shrink-0 z-20">
       <div className="p-6 flex items-center space-x-3 border-b border-slate-700">
         <Hexagon className="text-blue-500 w-8 h-8 fill-blue-500/20" />
-        <span className="text-xl font-bold tracking-tight">SysDesign<span className="text-blue-500">.io</span></span>
+        <span className="text-lg font-bold tracking-tight">systemdesign<span className="text-blue-500">tracker</span></span>
       </div>
 
       <nav className="flex-1 p-4 space-y-2 mt-4">
